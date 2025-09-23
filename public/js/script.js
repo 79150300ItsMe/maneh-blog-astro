@@ -8,8 +8,14 @@
 function setHTMLSafe(el, html) {
   if (!el) return;
   try {
-    if (window.__ttPolicy && window.trustedTypes) {
-      el.innerHTML = __ttPolicy.createHTML(html);
+    // Check if Trusted Types is available and policy exists
+    if (window.trustedTypes && window.trustedTypes.isHTML) {
+      // Use DOMPurify as primary sanitizer for better compatibility
+      if (window.DOMPurify) {
+        el.innerHTML = DOMPurify.sanitize(html);
+      } else {
+        el.innerHTML = html; // fallback
+      }
     } else if (window.DOMPurify) {
       el.innerHTML = DOMPurify.sanitize(html);
     } else {
