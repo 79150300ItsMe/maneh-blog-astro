@@ -2199,9 +2199,13 @@ function renderInternalLinks(article) {
     const relatedArticle = ARTICLES.find(a => a.slug === slug);
     if (!relatedArticle) return null;
     
+    // Format URL: /YYYY/MM/DD/slug
+    const [year, month, day] = relatedArticle.published.split('-');
+    const articleUrl = `/${year}/${month}/${day}/${relatedArticle.slug}`;
+    
     return `
       <div class="related-article">
-        <a href="#p/${relatedArticle.slug}" 
+        <a href="${articleUrl}" 
            class="related-link"
            data-rel="related">
           <h4>${relatedArticle.title}</h4>
