@@ -591,7 +591,7 @@ function checkAdSenseSetup() {
     
     // Check CSP
     const cspMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
-    if (cspMeta && cspMeta.content.includes('adtrafficquality.google') && cspMeta.content.includes('eol.adtrafficquality.google')) {
+    if (cspMeta && cspMeta.content.includes('adtrafficquality.google') && cspMeta.content.includes('ep2.adtrafficquality.google')) {
       console.log('✅ CSP includes all AdSense domains (including adtrafficquality)');
     } else {
       console.log('❌ CSP missing AdSense domains');
