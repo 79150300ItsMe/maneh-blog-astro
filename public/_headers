@@ -1,0 +1,102 @@
+/* 
+  # Enhanced Security & SEO Headers for Maneh Blog
+  # Optimized for maximum security, performance, and SEO
+  
+  # HSTS - Force HTTPS
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  
+  # Allow AdSense iframes (removed X-Frame-Options: DENY)
+  
+  # Prevent MIME type sniffing
+  X-Content-Type-Options: nosniff
+  
+  # XSS Protection
+  X-XSS-Protection: 1; mode=block
+  
+  # Referrer Policy
+  Referrer-Policy: strict-origin-when-cross-origin
+  
+  # Permissions Policy - Restrict dangerous APIs
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
+  
+  # Content Security Policy - Comprehensive for AdSense/Analytics with Trusted Types
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://googletagmanager.com https://www.googletagmanager.com https://google-analytics.com https://www.google-analytics.com https://securepubads.g.doubleclick.net https://adservice.google.com https://fundingchoicesmessages.google.com https://cdn.jsdelivr.net; script-src-elem 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://securepubads.g.doubleclick.net https://googleads.g.doubleclick.net https://www.googletagmanager.com https://www.google-analytics.com https://tpc.googlesyndication.com https://cdn.jsdelivr.net https://static.cloudflareinsights.com; connect-src 'self' https://pagead2.googlesyndication.com https://securepubads.g.doubleclick.net https://google-analytics.com https://www.google-analytics.com https://fundingchoicesmessages.google.com https://cdn.jsdelivr.net https://ep1.adtrafficquality.google; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; frame-ancestors 'none'; img-src 'self' data: blob: https: http:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; object-src 'none'; trusted-types maneh dompurify default 'goog#html' 'goog#url' 'google#safe' *
+  
+  # SEO Headers
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  X-DNS-Prefetch-Control: on
+  
+  # Additional Security Headers - Enhanced
+  X-Permitted-Cross-Domain-Policies: none
+  # Cross-Origin-Embedder-Policy: require-corp  # Disabled - causes COEP errors
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  X-Download-Options: noopen
+  X-Robots-Tag: noarchive, noimageindex, nosnippet
+  Cache-Control: no-transform
+  
+  # Performance Headers
+  Vary: Accept-Encoding, User-Agent
+  X-Cache-Status: HIT
+  
+  # Randomized Headers for Anti-Detection
+  X-Powered-By: Apache/2.4.41
+  X-Content-Generator: WordPress/6.3.2
+  X-Framework: React/18.2.0
+  Server: nginx/1.22.1
+*/
+
+# Home page - highest priority for SEO
+/
+  Cache-Control: public, max-age=1800, s-maxage=3600, stale-while-revalidate=86400
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+
+# Article pages - high priority for SEO
+/*/2025/*/*
+  Cache-Control: public, max-age=7200, s-maxage=14400, stale-while-revalidate=86400
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+
+# Category pages - medium priority
+/#category/*
+  Cache-Control: public, max-age=3600, s-maxage=7200, stale-while-revalidate=86400
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large
+
+# Static pages - lower priority
+/#about
+  Cache-Control: public, max-age=7200, s-maxage=14400, stale-while-revalidate=86400
+  X-Robots-Tag: index, follow, max-snippet:-1
+
+/#policy
+  Cache-Control: public, max-age=7200, s-maxage=14400, stale-while-revalidate=86400
+  X-Robots-Tag: index, follow, max-snippet:-1
+
+# Static assets - hyper-optimized cache
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: text/css; charset=utf-8
+  X-Content-Type-Options: nosniff
+  Content-Encoding: gzip
+  Accept-Ranges: bytes
+
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/javascript; charset=utf-8
+  X-Content-Type-Options: nosniff
+  Content-Encoding: gzip
+  Accept-Ranges: bytes
+
+# Images - medium cache
+/images/*
+  Cache-Control: public, max-age=2592000, s-maxage=31536000
+  X-Content-Type-Options: nosniff
+
+# Sitemap and robots - short cache
+/sitemap.xml
+  Cache-Control: public, max-age=3600, s-maxage=7200
+  Content-Type: application/xml; charset=utf-8
+  X-Robots-Tag: noindex
+
+/robots.txt
+  Cache-Control: public, max-age=3600, s-maxage=7200
+  Content-Type: text/plain; charset=utf-8
+  X-Robots-Tag: noindex
