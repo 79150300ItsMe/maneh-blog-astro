@@ -68,7 +68,6 @@ self.addEventListener('fetch', event => {
       url.pathname.startsWith('/api/') ||
       url.pathname.match(/^\/\d{4}\/\d{2}\/\d{2}\/\d+-/) ||
       url.pathname === '/ads.txt' ||
-      url.hostname === 'images.unsplash.com' ||
       url.hostname === 'www.googletagmanager.com' ||
       url.hostname === 'pagead2.googlesyndication.com') {
     return;
@@ -100,6 +99,32 @@ self.addEventListener('fetch', event => {
 // Helper function to fetch and cache
 async function fetchAndCache(request) {
   try {
+    const url = new URL(request.url);
+    
+    // Special handling for Unsplash images
+    if (url.hostname === 'images.unsplash.com') {
+      try {
+        const response = await fetch(request, { 
+          mode: 'cors',
+          credentials: 'omit'
+        });
+        
+        if (response.ok) {
+          const cache = await caches.open(RUNTIME_CACHE);
+          cache.put(request, response.clone());
+          return response;
+        }
+      } catch (error) {
+        console.warn('Unsplash image fetch failed, using fallback:', error);
+        // Return fallback image
+        return new Response('', { 
+          status: 200, 
+          headers: { 'Content-Type': 'image/svg+xml' }
+        });
+      }
+    }
+    
+    // Default fetch for other resources
     const response = await fetch(request, { mode: 'no-cors' });
     
     // Handle CSP blocked requests gracefully
