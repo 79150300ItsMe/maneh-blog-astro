@@ -2853,6 +2853,41 @@ if (document.readyState === 'loading') {
   initializeSearch();
 }
 
+// ====== STATIC TAG PAGE HANDLING ======
+/**
+ * Handle static tag pages (like /tag/antariksa)
+ */
+function handleStaticTagPage() {
+  const pathname = location.pathname;
+  const tagMatch = pathname.match(/^\/tag\/(.+)$/);
+  
+  if (tagMatch) {
+    const [, tagSlug] = tagMatch;
+    console.log('Static tag page detected:', tagSlug);
+    
+    // Convert slug to readable tag name
+    const tagName = tagSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    
+    // Show tag filter results
+    showTagFilter(tagName);
+    
+    // Hide search input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.style.display = 'none';
+    }
+    
+    return true;
+  }
+  
+  return false;
+}
+
+// Check for static tag page on load
+if (handleStaticTagPage()) {
+  console.log('Static tag page handled');
+}
+
 // ====== TAG FILTER FUNCTIONALITY ======
 /**
  * Show articles filtered by tag
@@ -2872,8 +2907,17 @@ function showTagFilter(tag) {
   
   // Filter articles by tag
   const filteredArticles = allArticles.filter(article => {
-    if (!article.tags || !Array.isArray(article.tags)) return false;
-    return article.tags.some(articleTag => 
+    if (!article.tags) return false;
+    
+    // Handle both string and array tags
+    let tags = article.tags;
+    if (typeof tags === 'string') {
+      tags = tags.split(/[,;|/]/).map(t => t.trim()).filter(t => t);
+    }
+    
+    if (!Array.isArray(tags)) return false;
+    
+    return tags.some(articleTag => 
       articleTag.toLowerCase() === tag.toLowerCase()
     );
   });
