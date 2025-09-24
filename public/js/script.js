@@ -417,6 +417,14 @@ function getRoute() {
       console.log('Routing -> article (pathname)', { slug, pathname });
       return { name: 'article', params: { slug, year, month, day, order } };
     }
+    
+    // Pattern: /tag/slug - handle tag pages
+    const tagMatch = pathname.match(/^\/tag\/(.+)$/);
+    if (tagMatch) {
+      const [, tagSlug] = tagMatch;
+      console.log('Routing -> tag (pathname)', { tagSlug, pathname });
+      return { name: 'tag', params: { tagSlug } };
+    }
   }
   
   // Fallback to hash-based routing
@@ -2325,6 +2333,13 @@ async function route() {
         console.warn('Article not found, redirecting to home');
         navigateTo('#');
       }
+      return;
+    }
+    if (name === 'tag') {
+      console.log('Routing -> tag', { tagSlug: params.tagSlug });
+      // For tag pages, let the browser handle the navigation to the static page
+      // This will load the pre-built /tag/[tag] page from Astro
+      console.log('✅ Tag route handled by static page');
       return;
     }
     if (name === 'about')  { 
