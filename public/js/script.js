@@ -1845,12 +1845,6 @@ document.addEventListener('click', async (e)=>{
         return;
       }
       
-      // Handle tag links - redirect to new format
-      if (href.startsWith('/tag/')) {
-        console.log('Tag link clicked:', href);
-        // Let browser handle the navigation to /tag/[tag] page
-        return;
-      }
       
       // Handle other hash routes
       navigateTo(href);
@@ -1863,6 +1857,14 @@ document.addEventListener('click', async (e)=>{
   const internalLink = e.target.closest('a[href^="/"], a[href^="./"], a[href^="../"]');
   if (internalLink) {
     const href = internalLink.getAttribute('href');
+    
+    // Handle tag links first - redirect to static pages
+    if (href && href.startsWith('/tag/')) {
+      console.log('Tag link clicked:', href);
+      e.preventDefault();
+      window.location.href = href;
+      return;
+    }
     
     // Check if it's an index.html link or root link
     if (href === '/' || href === '/index.html' || href.endsWith('/index.html')) {
