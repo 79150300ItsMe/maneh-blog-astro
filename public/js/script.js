@@ -2234,14 +2234,21 @@ function renderInternalLinks(article) {
     const relatedArticle = ARTICLES.find(a => a.slug === slug);
     if (!relatedArticle) return null;
     
-    // Format URL: /YYYY/MM/DD/slug
+    // Format URL: /YYYY/MM/DD/order-slug (with order number)
     const [year, month, day] = relatedArticle.published.split('-');
-    const articleUrl = `/${year}/${month}/${day}/${relatedArticle.slug}`;
+    
+    // Get order number based on category and published date
+    const categoryArticles = ARTICLES.filter(art => art.category === relatedArticle.category)
+      .sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
+    const order = categoryArticles.findIndex(art => art.slug === relatedArticle.slug) + 1;
+    
+    const articleUrl = `/${year}/${month}/${day}/${order}-${relatedArticle.slug}`;
     
     return `
       <div class="related-article">
         <a href="${articleUrl}" 
            class="related-link"
+           data-slug="${relatedArticle.slug}"
            data-rel="related">
           <h4>${relatedArticle.title}</h4>
           <p>${relatedArticle.summary}</p>
@@ -2655,6 +2662,334 @@ if (document.readyState === 'loading') {
 } else {
   addMenuNavigationHandlers();
 }
+
+// ====== SEARCH FUNCTIONALITY ======
+let searchTimeout = null;
+let currentSearchQuery = '';
+
+/**
+ * Initialize search functionality
+ */
+function initializeSearch() {
+  const searchInput = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('clearSearch');
+  const searchSection = document.getElementById('searchSection');
+  
+  if (!searchInput || !clearBtn || !searchSection) return;
+  
+  // Search input handler
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim();
+    currentSearchQuery = query;
+    
+    if (query.length > 0) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        performSearch(query);
+      }, 300);
+      clearBtn.style.display = 'block';
+    } else {
+      clearBtn.style.display = 'none';
+      hideSearchResults();
+    }
+  });
+  
+  // Clear search handler
+  clearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    currentSearchQuery = '';
+    clearBtn.style.display = 'none';
+    hideSearchResults();
+  });
+  
+  // Show search section when typing
+  searchInput.addEventListener('focus', () => {
+    if (currentSearchQuery.length > 0) {
+      searchSection.style.display = 'block';
+    }
+  });
+}
+
+/**
+ * Perform search and display results
+ * @param {string} query - Search query
+ */
+function performSearch(query) {
+  if (!query || query.length < 2) return;
+  
+  const searchSection = document.getElementById('searchSection');
+  const searchResults = document.getElementById('searchResults');
+  
+  if (!searchSection || !searchResults) return;
+  
+  // Show search section
+  searchSection.style.display = 'block';
+  
+  // Get all articles
+  const allArticles = window.ARTICLES || ARTICLES || [];
+  
+  // Filter articles based on query
+  const filteredArticles = allArticles.filter(article => {
+    const searchText = `${article.title} ${article.summary} ${article.tags.join(' ')}`.toLowerCase();
+    return searchText.includes(query.toLowerCase());
+  });
+  
+  // Sort by relevance (title matches first, then summary, then tags)
+  const sortedArticles = filteredArticles.sort((a, b) => {
+    const aTitle = a.title.toLowerCase().includes(query.toLowerCase()) ? 1 : 0;
+    const bTitle = b.title.toLowerCase().includes(query.toLowerCase()) ? 1 : 0;
+    const aSummary = a.summary.toLowerCase().includes(query.toLowerCase()) ? 0.5 : 0;
+    const bSummary = b.summary.toLowerCase().includes(query.toLowerCase()) ? 0.5 : 0;
+    
+    return (bTitle + bSummary) - (aTitle + aSummary);
+  });
+  
+  // Render search results
+  renderSearchResults(sortedArticles, query);
+}
+
+/**
+ * Render search results
+ * @param {Array} articles - Filtered articles
+ * @param {string} query - Search query
+ */
+function renderSearchResults(articles, query) {
+  const searchResults = document.getElementById('searchResults');
+  if (!searchResults) return;
+  
+  if (articles.length === 0) {
+    searchResults.innerHTML = `
+      <div class="search-no-results">
+        <h3>Tidak ada hasil ditemukan</h3>
+        <p>Tidak ada artikel yang cocok dengan pencarian "${query}". Coba kata kunci lain.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const resultsHTML = articles.map(article => {
+    // Generate URL with order number
+    const [year, month, day] = article.published.split('-');
+    const categoryArticles = ARTICLES.filter(art => art.category === article.category)
+      .sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
+    const order = categoryArticles.findIndex(art => art.slug === article.slug) + 1;
+    const articleUrl = `/${year}/${month}/${day}/${order}-${article.slug}`;
+    
+    return `
+      <div class="search-result-item" data-slug="${article.slug}">
+        <img src="${article.cover || '/img/avatar-default.svg'}" 
+             alt="${article.title}" 
+             class="search-result-thumb"
+             loading="lazy">
+        <div class="search-result-content">
+          <h3 class="search-result-title">${article.title}</h3>
+          <p class="search-result-date">${formatDate(article.published)}</p>
+          <p class="search-result-summary">${article.summary}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  searchResults.innerHTML = resultsHTML;
+  
+  // Add click handlers for search results
+  searchResults.querySelectorAll('.search-result-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const slug = item.dataset.slug;
+      if (slug) {
+        navigateToArticle(slug);
+      }
+    });
+  });
+}
+
+/**
+ * Hide search results and return to normal view
+ */
+function hideSearchResults() {
+  const searchSection = document.getElementById('searchSection');
+  if (searchSection) {
+    searchSection.style.display = 'none';
+  }
+}
+
+/**
+ * Navigate to article from search result
+ * @param {string} slug - Article slug
+ */
+function navigateToArticle(slug) {
+  const article = ARTICLES.find(a => a.slug === slug);
+  if (!article) return;
+  
+  // Generate URL with order number
+  const [year, month, day] = article.published.split('-');
+  const categoryArticles = ARTICLES.filter(art => art.category === article.category)
+    .sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
+  const order = categoryArticles.findIndex(art => art.slug === article.slug) + 1;
+  const articleUrl = `/${year}/${month}/${day}/${order}-${article.slug}`;
+  
+  // Navigate to article
+  navigateTo(articleUrl);
+}
+
+/**
+ * Format date for display
+ * @param {string} dateString - Date string
+ * @returns {string} Formatted date
+ */
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('id-ID', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+// Initialize search when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeSearch);
+} else {
+  initializeSearch();
+}
+
+// ====== TAG FILTER FUNCTIONALITY ======
+/**
+ * Show articles filtered by tag
+ * @param {string} tag - Tag to filter by
+ */
+function showTagFilter(tag) {
+  const searchSection = document.getElementById('searchSection');
+  const searchResults = document.getElementById('searchResults');
+  
+  if (!searchSection || !searchResults) return;
+  
+  // Show search section
+  searchSection.style.display = 'block';
+  
+  // Get all articles
+  const allArticles = window.ARTICLES || ARTICLES || [];
+  
+  // Filter articles by tag
+  const filteredArticles = allArticles.filter(article => {
+    if (!article.tags || !Array.isArray(article.tags)) return false;
+    return article.tags.some(articleTag => 
+      articleTag.toLowerCase() === tag.toLowerCase()
+    );
+  });
+  
+  // Sort by published date (newest first)
+  const sortedArticles = filteredArticles.sort((a, b) => 
+    new Date(b.published).getTime() - new Date(a.published).getTime()
+  );
+  
+  // Render tag filter results
+  renderTagFilterResults(sortedArticles, tag);
+}
+
+/**
+ * Render tag filter results
+ * @param {Array} articles - Filtered articles
+ * @param {string} tag - Tag name
+ */
+function renderTagFilterResults(articles, tag) {
+  const searchResults = document.getElementById('searchResults');
+  if (!searchResults) return;
+  
+  if (articles.length === 0) {
+    searchResults.innerHTML = `
+      <div class="tag-filter-results">
+        <div class="tag-filter-header">
+          <h2 class="tag-filter-title">Tag: ${tag}</h2>
+          <p class="tag-filter-description">Tidak ada artikel yang ditemukan dengan tag "${tag}".</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+  
+  const resultsHTML = `
+    <div class="tag-filter-results">
+      <div class="tag-filter-header">
+        <h2 class="tag-filter-title">Tag: ${tag}</h2>
+        <p class="tag-filter-description">Ditemukan ${articles.length} artikel dengan tag "${tag}".</p>
+      </div>
+      <div class="tag-filter-grid">
+        ${articles.map(article => {
+          // Generate URL with order number
+          const [year, month, day] = article.published.split('-');
+          const categoryArticles = ARTICLES.filter(art => art.category === article.category)
+            .sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
+          const order = categoryArticles.findIndex(art => art.slug === article.slug) + 1;
+          const articleUrl = `/${year}/${month}/${day}/${order}-${article.slug}`;
+          
+          return `
+            <div class="tag-filter-item" data-slug="${article.slug}">
+              <img src="${article.cover || '/img/avatar-default.svg'}" 
+                   alt="${article.title}" 
+                   class="tag-filter-thumb"
+                   loading="lazy">
+              <div class="tag-filter-content">
+                <h3 class="tag-filter-item-title">${article.title}</h3>
+                <div class="tag-filter-meta">
+                  <span class="tag-filter-date">${formatDate(article.published)}</span>
+                </div>
+                <p class="tag-filter-summary">${article.summary}</p>
+                <div class="tag-filter-tags">
+                  ${article.tags.map(tag => `
+                    <span class="tag-filter-tag">${tag}</span>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  
+  searchResults.innerHTML = resultsHTML;
+  
+  // Add click handlers for tag filter results
+  searchResults.querySelectorAll('.tag-filter-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const slug = item.dataset.slug;
+      if (slug) {
+        navigateToArticle(slug);
+      }
+    });
+  });
+}
+
+/**
+ * Handle tag click events
+ * @param {string} tag - Tag name
+ */
+function handleTagClick(tag) {
+  console.log('Tag clicked:', tag);
+  
+  // Hide search input and show tag filter
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.value = '';
+    searchInput.style.display = 'none';
+  }
+  
+  // Show tag filter results
+  showTagFilter(tag);
+}
+
+// Add global tag click handler
+document.addEventListener('click', (e) => {
+  const tagElement = e.target.closest('[data-tag]');
+  if (tagElement) {
+    e.preventDefault();
+    const tag = tagElement.getAttribute('data-tag');
+    if (tag) {
+      handleTagClick(tag);
+    }
+  }
+});
 
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
