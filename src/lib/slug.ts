@@ -38,3 +38,18 @@ export function getTagUrl(tag: string): string {
 export function getTagHashUrl(tag: string): string {
   return `/#tag/${slugifyTag(tag)}`;
 }
+
+/**
+ * Check if a tag matches another tag after normalization
+ * @param tagFromURL - Tag from URL parameter
+ * @param articleTag - Tag from article
+ * @returns True if tags match after normalization
+ */
+export function isTagMatch(tagFromURL: string, articleTag: string): boolean {
+  if (!tagFromURL || !articleTag) return false;
+  
+  const normalizedURL = slugifyTag(tagFromURL);
+  const normalizedArticle = slugifyTag(articleTag);
+  
+  return normalizedURL === normalizedArticle;
+}

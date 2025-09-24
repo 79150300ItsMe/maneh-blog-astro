@@ -63,13 +63,20 @@ self.addEventListener('fetch', event => {
   // Skip chrome-extension and other non-http(s) URLs
   if (!request.url.startsWith('http')) return;
 
-  // Skip API calls, video proxy, article URLs, ads.txt, and external scripts
+  // Skip API calls, video proxy, article URLs, ads.txt, external scripts, fonts, and ad services
   if (url.pathname.startsWith('/v/') || 
       url.pathname.startsWith('/api/') ||
       url.pathname.match(/^\/\d{4}\/\d{2}\/\d{2}\/\d+-/) ||
       url.pathname === '/ads.txt' ||
       url.hostname === 'www.googletagmanager.com' ||
-      url.hostname === 'pagead2.googlesyndication.com') {
+      url.hostname === 'pagead2.googlesyndication.com' ||
+      url.hostname === 'fonts.gstatic.com' ||
+      url.hostname === 'ep1.adtrafficquality.google' ||
+      url.hostname === 'ep2.adtrafficquality.google' ||
+      url.hostname === 'securepubads.g.doubleclick.net' ||
+      url.hostname === 'googleads.g.doubleclick.net' ||
+      url.hostname === 'tpc.googlesyndication.com' ||
+      url.hostname === 'fundingchoicesmessages.google.com') {
     return;
   }
 

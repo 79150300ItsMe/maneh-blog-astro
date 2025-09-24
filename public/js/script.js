@@ -3348,7 +3348,7 @@ document.addEventListener('click', async (e) => {
 console.log('✅ Route listeners added');
 
 // ====== BOOTSTRAP ORDER ======
-function waitUntilSafe({ timeout = 3500 } = {}) {
+function waitUntilSafe({ timeout = 2000 } = {}) {
   return new Promise((resolve) => {
     const t0 = Date.now();
     const timer = setInterval(() => {
