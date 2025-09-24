@@ -1,0 +1,168 @@
+---
+import { slugifyTag } from '../../lib/slug';
+
+// Import articles data - this should match the data in public/js/data.js
+const ARTICLES = [
+  {
+    slug: "setup-vscode-web-development-panduan-lengkap",
+    published: "2025-01-22",
+    category: "tutorial",
+    title: "Setup VSCode untuk Web Development: Panduan Lengkap 2025",
+    tags: ["VSCode", "Web Development", "Setup", "Tutorial", "Tools"],
+    cover: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=800&q=80&auto=format",
+    minutes: 12,
+    summary: "Panduan lengkap setup VSCode untuk web development dengan extension terbaik, settings optimal, dan workflow produktif untuk developer modern.",
+    alt: "Antarmuka VSCode untuk web development",
+    links: ["cara-membuat-website-dengan-chatgpt-ai-tools", "panduan-lengkap-belajar-python-untuk-pemula", "panduan-karir-developer-2025"]
+  },
+  // Add more articles as needed - this should match the data in public/js/data.js
+];
+
+// Generate all possible tag slugs
+export function getStaticPaths() {
+  // For now, generate a few common tag paths
+  // In a real implementation, you'd read from your data source
+  const commonTags = [
+    'vscode', 'web-development', 'setup', 'tutorial', 'tools',
+    'programming', 'javascript', 'python', 'react', 'vue',
+    'security', 'privacy', 'cybersecurity', 'ai', 'machine-learning'
+  ];
+  
+  return commonTags.map(tag => ({
+    params: { tag }
+  }));
+}
+
+const { tag } = Astro.params;
+const activeTag = (tag ?? "").toLowerCase();
+
+// Filter articles by tag
+const filteredArticles = ARTICLES.filter(article => 
+  (article.tags || []).some(tagName => slugifyTag(tagName) === activeTag)
+);
+
+// Generate title and description
+const tagDisplayName = activeTag.replace(/-/g, ' ');
+const title = `Tag: ${tagDisplayName} — Maneh`;
+const description = `Kumpulan artikel dengan tag "${tagDisplayName}" dari Maneh. Tutorial dan tips teknologi terlengkap dengan bahasa sederhana.`;
+
+// Generate article URLs
+const articlesWithUrls = filteredArticles.map(article => {
+  const date = new Date(article.published);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  
+  // Get order number based on category and published date
+  const categoryArticles = ARTICLES.filter(art => art.category === article.category)
+    .sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
+  const order = categoryArticles.findIndex(art => art.slug === article.slug) + 1;
+  
+  const articleUrl = `/${year}/${month}/${day}/${order}-${article.slug}`;
+  
+  return {
+    ...article,
+    url: articleUrl
+  };
+});
+---
+
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content={`https://maneh.blog/tag/${activeTag}`}>
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:image" content="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&h=630&auto=format&fit=crop&crop=center">
+  <meta property="og:site_name" content="Maneh">
+  <meta property="og:locale" content="id_ID">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content={`https://maneh.blog/tag/${activeTag}`}>
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&h=630&auto=format&fit=crop&crop=center">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href={`https://maneh.blog/tag/${activeTag}`}>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/style.css?v=1.4" type="text/css">
+</head>
+<body>
+  <main class="container">
+    <section class="page">
+      <header>
+        <h1>Tag: {tagDisplayName}</h1>
+        <p class="tag-description">{description}</p>
+        <p class="tag-count">Ditemukan {filteredArticles.length} artikel</p>
+      </header>
+      
+      {filteredArticles.length > 0 ? (
+        <div class="articles-list">
+          {articlesWithUrls.map(article => (
+            <article class="card">
+              <a href={article.url} data-slug={article.slug}>
+                <img 
+                  class="thumb" 
+                  loading="lazy" 
+                  decoding="async" 
+                  src={article.cover} 
+                  alt={article.title}
+                  onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&h=630&auto=format&fit=crop&crop=center'; this.onerror=null;"
+                >
+                <div class="h2">{article.title}</div>
+                <div class="meta">
+                  <time datetime={article.published}>
+                    {new Date(article.published).toLocaleDateString('id-ID', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </time>
+                </div>
+                <p class="desc">{article.summary}</p>
+                {article.tags && article.tags.length > 0 && (
+                  <div class="tags">
+                    {article.tags.map(tag => (
+                      <span class="tag-item" data-tag={slugifyTag(tag)}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </a>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="no-articles">
+          <p>Tidak ada artikel untuk tag "{tagDisplayName}".</p>
+          <p><a href="/">← Kembali ke beranda</a></p>
+        </div>
+      )}
+    </section>
+  </main>
+  
+  <!-- Fallback script for hash-based navigation -->
+  <script>
+    // Handle hash-based tag navigation for backward compatibility
+    (function() {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#tag/')) {
+        const tagSlug = hash.replace('#tag/', '');
+        console.info('Hash-based tag navigation detected, redirecting to:', `/tag/${tagSlug}`);
+        window.location.replace(`/tag/${tagSlug}`);
+      }
+    })();
+  </script>
+</body>
+</html>

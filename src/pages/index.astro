@@ -280,6 +280,29 @@ const description = "Maneh: platform tutorial & tips teknologi terlengkap dengan
     })();
   </script>
   
+  <!-- Tag Navigation Fallback -->
+  <script>
+    // Handle hash-based tag navigation for backward compatibility
+    (function() {
+      'use strict';
+      
+      // Check for hash-based tag navigation
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#tag/')) {
+        const tagSlug = hash.replace('#tag/', '');
+        console.info('Hash-based tag navigation detected, redirecting to:', `/tag/${tagSlug}`);
+        window.location.replace(`/tag/${tagSlug}`);
+        return;
+      }
+      
+      // Handle hash-based category navigation (existing functionality)
+      if (hash && hash.startsWith('#category/')) {
+        // Let existing SPA routing handle this
+        return;
+      }
+    })();
+  </script>
+  
   <!-- Anti-Inspect & Security Scripts -->
   <script>
     // Anti-Inspect Protection

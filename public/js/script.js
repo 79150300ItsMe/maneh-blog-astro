@@ -1837,6 +1837,13 @@ document.addEventListener('click', async (e)=>{
         return;
       }
       
+      // Handle tag links - redirect to new format
+      if (href.startsWith('/tag/')) {
+        console.log('Tag link clicked:', href);
+        // Let browser handle the navigation to /tag/[tag] page
+        return;
+      }
+      
       // Handle other hash routes
       navigateTo(href);
       return;
@@ -2053,7 +2060,7 @@ function renderReader(slug, queryStr) {
     const tagsContainer = document.createElement('div');
     tagsContainer.className = 'tags-container';
     setHTMLSafe(tagsContainer, a.tags.map(tag => 
-      `<a href="#tag/${slugify(tag)}" class="tag-item">${tag}</a>`
+      `<a href="/tag/${slugify(tag)}" class="tag-item" rel="tag" data-tag="${slugify(tag)}" data-hash="#tag/${slugify(tag)}">${tag}</a>`
     ).join(''));
     const postMeta = post.querySelector('.post-meta');
     if (postMeta) {
