@@ -123,6 +123,66 @@ const ARTICLES = [
     summary: "Analisis mendalam dampak jangka panjang remote work pada ekonomi global dan transformasi dunia kerja.",
     alt: "Remote work dan dampak ekonomi global",
     links: ["panduan-lengkap-setup-home-office-remote-work", "era-baru-sinema-ai-sora", "panduan-karir-developer-2025"]
+  },
+  {
+    slug: "panduan-karir-developer-2025",
+    published: "2025-09-15",
+    category: "tutorial",
+    title: "Panduan Karir Developer 2025: Roadmap Lengkap",
+    tags: ["Karir", "Developer", "Programming", "Tutorial", "Roadmap"],
+    cover: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800&q=80&auto=format",
+    minutes: 22,
+    summary: "Roadmap lengkap memulai karir sebagai developer di 2025. Panduan skill, tools, dan langkah-langkah menjadi programmer profesional.",
+    alt: "Karir developer dan roadmap programming",
+    links: ["setup-vscode-web-development-panduan-lengkap", "panduan-lengkap-belajar-python-untuk-pemula", "cara-membuat-website-dengan-chatgpt-ai-tools"]
+  },
+  {
+    slug: "panduan-keamanan-siber-2025",
+    published: "2025-09-18",
+    category: "tutorial",
+    title: "Panduan Keamanan Siber 2025: Perlindungan Digital",
+    tags: ["Keamanan", "Siber", "Cybersecurity", "Tutorial", "Digital"],
+    cover: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80&auto=format",
+    minutes: 19,
+    summary: "Panduan komprehensif keamanan siber untuk melindungi data dan privasi digital di era teknologi modern.",
+    alt: "Keamanan siber dan perlindungan digital",
+    links: ["panduan-karir-developer-2025", "setup-vscode-web-development-panduan-lengkap", "panduan-lengkap-belajar-python-untuk-pemula"]
+  },
+  {
+    slug: "tips-optimasi-android-terbaru",
+    published: "2025-09-16",
+    category: "tutorial",
+    title: "Tips Optimasi Android Terbaru 2025",
+    tags: ["Android", "Optimasi", "Mobile", "Tutorial", "Tips"],
+    cover: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&auto=format",
+    minutes: 14,
+    summary: "Tips dan trik optimasi performa Android untuk pengalaman mobile yang lebih smooth dan responsif.",
+    alt: "Optimasi Android dan performa mobile",
+    links: ["panduan-karir-developer-2025", "tutorial-lengkap-membuat-aplikasi-mobile-flutter", "panduan-lengkap-setup-home-office-remote-work"]
+  },
+  {
+    slug: "setup-home-office-ergonomis",
+    published: "2025-09-14",
+    category: "tutorial",
+    title: "Setup Home Office Ergonomis untuk Produktivitas Maksimal",
+    tags: ["Home Office", "Ergonomis", "Produktivitas", "WFH", "Setup"],
+    cover: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=800&q=80&auto=format",
+    minutes: 16,
+    summary: "Panduan setup home office yang ergonomis dan nyaman untuk meningkatkan produktivitas kerja dari rumah.",
+    alt: "Setup home office ergonomis",
+    links: ["panduan-lengkap-setup-home-office-remote-work", "dampak-jangka-panjang-remote-work", "panduan-karir-developer-2025"]
+  },
+  {
+    slug: "panduan-laptop-gaming-2025",
+    published: "2025-09-17",
+    category: "tutorial",
+    title: "Panduan Memilih Laptop Gaming Terbaik 2025",
+    tags: ["Gaming", "Laptop", "Hardware", "Tutorial", "Review"],
+    cover: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&auto=format",
+    minutes: 18,
+    summary: "Panduan lengkap memilih laptop gaming terbaik dengan spesifikasi optimal untuk gaming modern.",
+    alt: "Laptop gaming dan hardware gaming",
+    links: ["panduan-karir-developer-2025", "setup-vscode-web-development-panduan-lengkap", "tips-optimasi-android-terbaru"]
   }
 ];
 
@@ -190,29 +250,41 @@ export function getStaticPaths() {
 }
 
 const { tag } = Astro.params;
-const activeTag = (tag ?? "").toLowerCase();
+const tagParam = tag ?? "";
+
+// Normalize tag parameter
+const slugTarget = slugifyTag(tagParam);
 
 // Filter articles by tag with defensive handling
 const filteredArticles = ARTICLES.filter(article => {
-  // Defensive handling of tags array
   let tags = article.tags;
+  
+  // Handle string tags defensively with multiple delimiters
   if (typeof tags === 'string') {
-    tags = tags.split(/[,|]/).map(t => t.trim()).filter(t => t);
+    tags = tags.split(/[,;|/]/).map(t => t.trim()).filter(t => t);
   }
+  
+  // Handle null/undefined tags
   if (!Array.isArray(tags)) {
     tags = [];
   }
   
-  return tags.some(tagName => slugifyTag(tagName) === activeTag);
+  // Check if any tag matches the target slug
+  return tags.some(tagName => slugifyTag(tagName) === slugTarget);
 });
 
+// Sort articles by publish date (newest first)
+const sortedArticles = filteredArticles.sort((a, b) => 
+  new Date(b.published).getTime() - new Date(a.published).getTime()
+);
+
 // Generate title and description with proper capitalization
-const tagDisplayName = activeTag.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+const tagDisplayName = tagParam.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 const title = `Artikel dengan Tag: ${tagDisplayName} — Maneh`;
 const description = `Kumpulan artikel dengan tag "${tagDisplayName}" dari Maneh. Tutorial dan tips teknologi terlengkap dengan bahasa sederhana.`;
 
 // Generate article URLs
-const articlesWithUrls = filteredArticles.map(article => {
+const articlesWithUrls = sortedArticles.map(article => {
   const date = new Date(article.published);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -242,7 +314,7 @@ const articlesWithUrls = filteredArticles.map(article => {
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content={`https://maneh.blog/tag/${activeTag}`}>
+  <meta property="og:url" content={`https://maneh.blog/tag/${slugTarget}`}>
   <meta property="og:title" content={title}>
   <meta property="og:description" content={description}>
   <meta property="og:image" content="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&h=630&auto=format&fit=crop&crop=center">
@@ -251,13 +323,13 @@ const articlesWithUrls = filteredArticles.map(article => {
   
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content={`https://maneh.blog/tag/${activeTag}`}>
+  <meta name="twitter:url" content={`https://maneh.blog/tag/${slugTarget}`}>
   <meta name="twitter:title" content={title}>
   <meta name="twitter:description" content={description}>
   <meta name="twitter:image" content="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&h=630&auto=format&fit=crop&crop=center">
   
   <!-- Canonical URL -->
-  <link rel="canonical" href={`https://maneh.blog/tag/${activeTag}`}>
+  <link rel="canonical" href={`https://maneh.blog/tag/${slugTarget}`}>
   
   <!-- Styles -->
   <link rel="stylesheet" href="/css/style.css?v=1.4" type="text/css">
@@ -268,10 +340,10 @@ const articlesWithUrls = filteredArticles.map(article => {
       <header>
         <h1>Artikel dengan Tag: {tagDisplayName}</h1>
         <p class="tag-description">{description}</p>
-        <p class="tag-count">Ditemukan {filteredArticles.length} artikel</p>
+        <p class="tag-count">Ditemukan {sortedArticles.length} artikel</p>
       </header>
       
-      {filteredArticles.length > 0 ? (
+      {sortedArticles.length > 0 ? (
         <div class="articles-list">
           {articlesWithUrls.map(article => (
             <article class="card">
@@ -310,7 +382,8 @@ const articlesWithUrls = filteredArticles.map(article => {
         </div>
       ) : (
         <div class="no-articles">
-          <p>Tidak ada artikel untuk tag "{tagDisplayName}".</p>
+          <h2>Tag terkait tidak ditemukan</h2>
+          <p>Kami tidak menemukan artikel dengan tag ini. Silakan telusuri tag lain atau kembali ke beranda.</p>
           <p><a href="/">← Kembali ke beranda</a></p>
         </div>
       )}
