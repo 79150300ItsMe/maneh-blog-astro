@@ -971,6 +971,51 @@ footer{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 40px;colo
   color: white;
 }
 
+/* Empty State for Tag Pages */
+.no-articles {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: var(--card);
+  border-radius: var(--radius);
+  margin: 2rem 0;
+  border: 1px solid var(--line);
+}
+
+.no-articles h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--title-text);
+  margin-bottom: 1rem;
+}
+
+.no-articles p {
+  font-size: 1rem;
+  color: var(--desc-text);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.recommended-articles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.recommended-card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.recommended-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: var(--brand1);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .search-section {
