@@ -7,5 +7,11 @@ export default defineConfig({
   trailingSlash: 'ignore',
   vite: {
     build: { target: 'es2020' },
+    server: {
+      hmr: {
+        port: 4321,
+        host: 'localhost'
+      }
+    }
   },
 });

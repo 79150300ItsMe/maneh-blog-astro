@@ -3374,7 +3374,7 @@ async function safeStart() {
   
   try {
     initSectionsCache();                   // <-- penting: definisikan cache dulu!
-    await waitUntilSafe({ timeout: 3500 }); // atau 4000 jika perlu
+    await waitUntilSafe({ timeout: 2000 }); // Reduced timeout for faster initialization
     await route();
     window.__APP_BOOTSTRAPPED = true;
     console.log('✅ Bootstrap completed');
