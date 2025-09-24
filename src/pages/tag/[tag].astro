@@ -189,7 +189,7 @@ const ARTICLES = [
 
 // Generate all possible tag slugs from actual articles
 export function getStaticPaths() {
-  // Define articles data here for getStaticPaths
+  // Use the same ARTICLES data for getStaticPaths to ensure consistency
   const articlesData = [
     {
       slug: "setup-vscode-web-development-panduan-lengkap",
@@ -230,6 +230,26 @@ export function getStaticPaths() {
     {
       slug: "dampak-jangka-panjang-remote-work",
       tags: ["Remote Work", "Ekonomi", "Global", "Produktivitas", "WFH"]
+    },
+    {
+      slug: "panduan-karir-developer-2025",
+      tags: ["Karir", "Developer", "Programming", "Tutorial", "Roadmap"]
+    },
+    {
+      slug: "panduan-keamanan-siber-2025",
+      tags: ["Keamanan", "Siber", "Cybersecurity", "Tutorial", "Digital"]
+    },
+    {
+      slug: "tips-optimasi-android-terbaru",
+      tags: ["Android", "Optimasi", "Mobile", "Tutorial", "Tips"]
+    },
+    {
+      slug: "setup-home-office-ergonomis",
+      tags: ["Home Office", "Ergonomis", "Produktivitas", "WFH", "Setup"]
+    },
+    {
+      slug: "panduan-laptop-gaming-2025",
+      tags: ["Gaming", "Laptop", "Hardware", "Tutorial", "Review"]
     }
   ];
   
