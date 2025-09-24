@@ -260,6 +260,26 @@ const description = "Maneh: platform tutorial & tips teknologi terlengkap dengan
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2251624901582740"
      crossorigin="anonymous"></script>
   
+  <!-- Trusted Types Bootstrap -->
+  <script>
+    // Initialize Trusted Types policy safely
+    (function() {
+      'use strict';
+      
+      // Create our own policy only if Trusted Types is available and we don't have one
+      if (window.trustedTypes && !window.__ttPolicy) {
+        try {
+          window.__ttPolicy = trustedTypes.createPolicy('maneh', {
+            createHTML: function(s) { return s; },
+            createScriptURL: function(s) { return s; }
+          });
+        } catch (e) {
+          console.warn('Failed to create Trusted Types policy:', e);
+        }
+      }
+    })();
+  </script>
+  
   <!-- Anti-Inspect & Security Scripts -->
   <script>
     // Anti-Inspect Protection

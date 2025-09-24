@@ -99,19 +99,24 @@ self.addEventListener('fetch', event => {
 // Helper function to fetch and cache
 async function fetchAndCache(request) {
   try {
-    const response = await fetch(request);
+    const response = await fetch(request, { mode: 'no-cors' });
     
-    // Only cache successful responses
-    if (response.ok) {
+    // Handle CSP blocked requests gracefully
+    if (!response || (response.status !== 200 && response.type !== 'opaque')) {
+      return response;
+    }
+    
+    // Only cache successful responses (status 200 or basic type)
+    if (response.type === 'basic' || response.status === 200) {
       const cache = await caches.open(RUNTIME_CACHE);
-      // Clone response before caching
       cache.put(request, response.clone());
     }
     
     return response;
   } catch (error) {
-    console.error('Network fetch failed:', error);
-    throw error;
+    // Fallback: try to serve from cache if fetch fails
+    console.warn('Fetch failed, trying cache:', error);
+    return caches.match(request);
   }
 }
 
