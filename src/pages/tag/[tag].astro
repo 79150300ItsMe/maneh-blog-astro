@@ -1,5 +1,6 @@
 ---
 import { slugifyTag, getTagUrl, isTagMatch } from '../../lib/slug';
+import { Image } from 'astro:assets';
 
 // Import articles data - this should match the data in public/js/data.js
 // Using actual data from the blog
@@ -335,27 +336,28 @@ const articlesWithUrls = sortedArticles.map(article => {
   <link rel="stylesheet" href="/css/style.css?v=1.4" type="text/css">
 </head>
 <body>
-  <main class="container">
-    <section class="page">
+  <main class="container" role="main">
+    <section class="page" aria-labelledby="tag-title">
       <header>
-        <h1>Artikel dengan Tag: {tagDisplayName}</h1>
+        <h1 id="tag-title">Artikel dengan Tag: {tagDisplayName}</h1>
         <p class="tag-description">{description}</p>
         <p class="tag-count">Ditemukan {sortedArticles.length} artikel</p>
       </header>
       
       {sortedArticles.length > 0 ? (
-        <div class="articles-list">
+        <div class="articles-list" role="list" aria-label={`Daftar artikel dengan tag ${tagDisplayName}`}>
           {articlesWithUrls.map(article => (
-            <article class="card">
-              <a href={article.url} data-slug={article.slug}>
-                <img 
+            <article class="card" role="listitem">
+              <a href={article.url} data-slug={article.slug} aria-label={`Baca artikel: ${article.title}`}>
+                <Image 
                   class="thumb" 
-                  loading="lazy" 
-                  decoding="async" 
                   src={article.cover} 
                   alt={article.title}
-                  onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&h=630&auto=format&fit=crop&crop=center'; this.onerror=null;"
-                >
+                  width={400}
+                  height={300}
+                  loading="lazy"
+                  decoding="async"
+                />
                 <div class="h2">{article.title}</div>
                 <div class="meta">
                   <time datetime={article.published}>
@@ -386,7 +388,7 @@ const articlesWithUrls = sortedArticles.map(article => {
           <p>Kami tidak menemukan artikel dengan tag ini. Berikut beberapa artikel terbaru yang mungkin menarik:</p>
           
           <!-- Show recommended articles -->
-          <div class="recommended-articles">
+          <div class="recommended-articles" role="list" aria-label="Artikel rekomendasi">
             {ARTICLES.slice(0, 6).map(article => {
               const date = new Date(article.published);
               const year = date.getFullYear();
@@ -401,16 +403,17 @@ const articlesWithUrls = sortedArticles.map(article => {
               const articleUrl = `/${year}/${month}/${day}/${order}-${article.slug}`;
               
               return (
-                <article class="card recommended-card">
-                  <a href={articleUrl} data-slug={article.slug}>
-                    <img 
+                <article class="card recommended-card" role="listitem">
+                  <a href={articleUrl} data-slug={article.slug} aria-label={`Baca artikel: ${article.title}`}>
+                    <Image 
                       class="thumb" 
-                      loading="lazy" 
-                      decoding="async" 
                       src={article.cover} 
                       alt={article.title}
-                      onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&h=630&auto=format&fit=crop&crop=center'; this.onerror=null;"
-                    >
+                      width={400}
+                      height={300}
+                      loading="lazy"
+                      decoding="async"
+                    />
                     <div class="h2">{article.title}</div>
                     <div class="meta">
                       <time datetime={article.published}>
