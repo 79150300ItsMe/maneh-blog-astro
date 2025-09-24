@@ -2,7 +2,7 @@
 import { slugifyTag, getTagUrl } from '../../lib/slug';
 
 // Import articles data - this should match the data in public/js/data.js
-// For now, we'll use a subset of the actual data. In production, this should be imported from a shared data source
+// Using actual data from the blog
 const ARTICLES = [
   {
     slug: "setup-vscode-web-development-panduan-lengkap",
@@ -17,20 +17,44 @@ const ARTICLES = [
     links: ["cara-membuat-website-dengan-chatgpt-ai-tools", "panduan-lengkap-belajar-python-untuk-pemula", "panduan-karir-developer-2025"]
   },
   {
-    slug: "cara-optimasi-chatgpt-panduan-prompts-terbaik",
-    published: "2025-01-20",
+    slug: "cara-membuat-website-dengan-chatgpt-ai-tools",
+    published: "2025-01-23",
+    category: "tutorial",
+    title: "Cara Membuat Website dengan ChatGPT & AI Tools (2025)",
+    tags: ["ChatGPT", "AI Tools", "Web Development", "Tutorial", "Website"],
+    cover: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80&auto=format",
+    minutes: 8,
+    summary: "Panduan step-by-step membuat website profesional menggunakan ChatGPT dan AI tools modern. Dari konsep hingga deployment dengan bantuan kecerdasan buatan.",
+    alt: "ChatGPT dan AI tools untuk pembuatan website",
+    links: ["setup-vscode-web-development-panduan-lengkap", "panduan-lengkap-belajar-python-untuk-pemula", "panduan-karir-developer-2025"]
+  },
+  {
+    slug: "optimasi-chatgpt-panduan-prompts",
+    published: "2025-09-19",
     category: "tutorial",
     title: "Cara Optimasi ChatGPT: Panduan Prompts Terbaik",
-    tags: ["AI", "ChatGPT", "Prompt Engineering", "Tutorial", "Produktivitas"],
-    cover: "https://images.unsplash.com/photo-1489599808417-5b4b0b0b0b0b?w=800&q=80&auto=format",
-    minutes: 15,
-    summary: "Panduan lengkap cara mengoptimalkan ChatGPT dengan prompts yang efektif untuk mendapatkan hasil terbaik dalam berbagai tugas.",
-    alt: "Optimasi ChatGPT dengan prompts terbaik",
-    links: ["setup-vscode-web-development-panduan-lengkap", "panduan-lengkap-belajar-python-untuk-pemula"]
+    tags: ["AI", "ChatGPT", "Prompt Engineering"],
+    cover: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80&auto=format",
+    minutes: 18,
+    summary: "Panduan lengkap optimasi ChatGPT dengan prompts yang efektif. Tips dan trik menghasilkan respons AI yang lebih akurat dan relevan.",
+    alt: "ChatGPT interface dan prompt optimization",
+    links: ["cara-membuat-website-dengan-chatgpt-ai-tools", "era-baru-sinema-ai-sora", "panduan-karir-developer-2025"]
+  },
+  {
+    slug: "era-baru-sinema-ai-sora",
+    published: "2025-09-25",
+    category: "news",
+    title: "AI Sora: Revolusi Video Generation 2025",
+    tags: ["AI", "Sora", "Generative Video", "Teknologi"],
+    cover: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&h=630&auto=format&fit=crop&crop=center",
+    minutes: 18,
+    summary: "Analisis mendalam dampak AI Sora pada industri film dan content creation. Bagaimana kecerdasan buatan mengubah cara kita membuat video.",
+    alt: "Tampilan AI Sora untuk video generation",
+    links: ["cara-membuat-website-dengan-chatgpt-ai-tools", "optimasi-chatgpt-panduan-prompts", "dampak-jangka-panjang-remote-work"]
   },
   {
     slug: "panduan-lengkap-belajar-python-untuk-pemula",
-    published: "2025-01-18",
+    published: "2025-01-26",
     category: "tutorial",
     title: "Panduan Lengkap Belajar Python untuk Pemula",
     tags: ["Python", "Programming", "Tutorial", "Pemula", "AI"],
@@ -38,7 +62,67 @@ const ARTICLES = [
     minutes: 20,
     summary: "Panduan komprehensif belajar Python dari dasar hingga mahir, cocok untuk pemula yang ingin memulai karir programming.",
     alt: "Belajar Python untuk pemula",
-    links: ["setup-vscode-web-development-panduan-lengkap", "cara-optimasi-chatgpt-panduan-prompts-terbaik"]
+    links: ["setup-vscode-web-development-panduan-lengkap", "cara-membuat-website-dengan-chatgpt-ai-tools", "panduan-karir-developer-2025"]
+  },
+  {
+    slug: "panduan-lengkap-setup-home-office-remote-work",
+    published: "2025-01-24",
+    category: "tutorial",
+    title: "Panduan Lengkap Setup Home Office untuk Remote Work",
+    tags: ["Remote Work", "Home Office", "Produktivitas", "WFH", "Ergonomis"],
+    cover: "https://images.unsplash.com/photo-1486946255434-2466348c2166?w=800&q=80&auto=format",
+    minutes: 15,
+    summary: "Panduan lengkap setup home office yang ergonomis dan produktif untuk remote work. Tips memaksimalkan produktivitas di rumah.",
+    alt: "Setup home office untuk remote work",
+    links: ["setup-vscode-web-development-panduan-lengkap", "panduan-lengkap-belajar-python-untuk-pemula", "panduan-karir-developer-2025"]
+  },
+  {
+    slug: "tutorial-lengkap-membuat-aplikasi-mobile-flutter",
+    published: "2025-01-25",
+    category: "tutorial",
+    title: "Tutorial Lengkap Membuat Aplikasi Mobile dengan Flutter",
+    tags: ["Flutter", "Mobile Development", "Dart", "Tutorial", "App Development"],
+    cover: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80&auto=format",
+    minutes: 25,
+    summary: "Panduan step-by-step membuat aplikasi mobile cross-platform dengan Flutter. Dari instalasi hingga deployment ke app store.",
+    alt: "Flutter mobile app development",
+    links: ["setup-vscode-web-development-panduan-lengkap", "panduan-lengkap-belajar-python-untuk-pemula", "panduan-karir-developer-2025"]
+  },
+  {
+    slug: "perlombaan-antariksa-generasi-baru",
+    published: "2025-09-24",
+    category: "news",
+    title: "Perlombaan Antariksa Generasi Baru: SpaceX vs Blue Origin",
+    tags: ["SpaceX", "Blue Origin", "Antariksa", "Teknologi", "Space"],
+    cover: "https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=800&q=80&auto=format",
+    minutes: 12,
+    summary: "Analisis mendalam persaingan antar perusahaan antariksa swasta dalam mengembangkan teknologi roket dan misi luar angkasa.",
+    alt: "Roket SpaceX dan Blue Origin",
+    links: ["era-baru-sinema-ai-sora", "revolusi-energi-hijau-baterai-solid-state", "dampak-jangka-panjang-remote-work"]
+  },
+  {
+    slug: "revolusi-energi-hijau-baterai-solid-state",
+    published: "2025-09-23",
+    category: "news",
+    title: "Revolusi Energi Hijau: Baterai Solid State 2025",
+    tags: ["Energi Hijau", "Baterai", "Teknologi", "Sustainability", "Electric Vehicle"],
+    cover: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=800&q=80&auto=format",
+    minutes: 14,
+    summary: "Teknologi baterai solid state yang revolusioner mengubah masa depan kendaraan listrik dan penyimpanan energi terbarukan.",
+    alt: "Baterai solid state untuk energi hijau",
+    links: ["perlombaan-antariksa-generasi-baru", "era-baru-sinema-ai-sora", "dampak-jangka-panjang-remote-work"]
+  },
+  {
+    slug: "dampak-jangka-panjang-remote-work",
+    published: "2025-09-22",
+    category: "news",
+    title: "Dampak Jangka Panjang Remote Work pada Ekonomi Global",
+    tags: ["Remote Work", "Ekonomi", "Global", "Produktivitas", "WFH"],
+    cover: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800&q=80&auto=format",
+    minutes: 16,
+    summary: "Analisis mendalam dampak jangka panjang remote work pada ekonomi global dan transformasi dunia kerja.",
+    alt: "Remote work dan dampak ekonomi global",
+    links: ["panduan-lengkap-setup-home-office-remote-work", "era-baru-sinema-ai-sora", "panduan-karir-developer-2025"]
   }
 ];
 
@@ -51,12 +135,40 @@ export function getStaticPaths() {
       tags: ["VSCode", "Web Development", "Setup", "Tutorial", "Tools"]
     },
     {
-      slug: "cara-optimasi-chatgpt-panduan-prompts-terbaik",
-      tags: ["AI", "ChatGPT", "Prompt Engineering", "Tutorial", "Produktivitas"]
+      slug: "cara-membuat-website-dengan-chatgpt-ai-tools",
+      tags: ["ChatGPT", "AI Tools", "Web Development", "Tutorial", "Website"]
+    },
+    {
+      slug: "optimasi-chatgpt-panduan-prompts",
+      tags: ["AI", "ChatGPT", "Prompt Engineering"]
+    },
+    {
+      slug: "era-baru-sinema-ai-sora",
+      tags: ["AI", "Sora", "Generative Video", "Teknologi"]
     },
     {
       slug: "panduan-lengkap-belajar-python-untuk-pemula",
       tags: ["Python", "Programming", "Tutorial", "Pemula", "AI"]
+    },
+    {
+      slug: "panduan-lengkap-setup-home-office-remote-work",
+      tags: ["Remote Work", "Home Office", "Produktivitas", "WFH", "Ergonomis"]
+    },
+    {
+      slug: "tutorial-lengkap-membuat-aplikasi-mobile-flutter",
+      tags: ["Flutter", "Mobile Development", "Dart", "Tutorial", "App Development"]
+    },
+    {
+      slug: "perlombaan-antariksa-generasi-baru",
+      tags: ["SpaceX", "Blue Origin", "Antariksa", "Teknologi", "Space"]
+    },
+    {
+      slug: "revolusi-energi-hijau-baterai-solid-state",
+      tags: ["Energi Hijau", "Baterai", "Teknologi", "Sustainability", "Electric Vehicle"]
+    },
+    {
+      slug: "dampak-jangka-panjang-remote-work",
+      tags: ["Remote Work", "Ekonomi", "Global", "Produktivitas", "WFH"]
     }
   ];
   
