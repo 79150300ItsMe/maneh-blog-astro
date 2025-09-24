@@ -1,7 +1,8 @@
 ---
-import { slugifyTag } from '../../lib/slug';
+import { slugifyTag, getTagUrl } from '../../lib/slug';
 
 // Import articles data - this should match the data in public/js/data.js
+// For now, we'll use a subset of the actual data. In production, this should be imported from a shared data source
 const ARTICLES = [
   {
     slug: "setup-vscode-web-development-panduan-lengkap",
@@ -15,20 +16,63 @@ const ARTICLES = [
     alt: "Antarmuka VSCode untuk web development",
     links: ["cara-membuat-website-dengan-chatgpt-ai-tools", "panduan-lengkap-belajar-python-untuk-pemula", "panduan-karir-developer-2025"]
   },
-  // Add more articles as needed - this should match the data in public/js/data.js
+  {
+    slug: "cara-optimasi-chatgpt-panduan-prompts-terbaik",
+    published: "2025-01-20",
+    category: "tutorial",
+    title: "Cara Optimasi ChatGPT: Panduan Prompts Terbaik",
+    tags: ["AI", "ChatGPT", "Prompt Engineering", "Tutorial", "Produktivitas"],
+    cover: "https://images.unsplash.com/photo-1489599808417-5b4b0b0b0b0b?w=800&q=80&auto=format",
+    minutes: 15,
+    summary: "Panduan lengkap cara mengoptimalkan ChatGPT dengan prompts yang efektif untuk mendapatkan hasil terbaik dalam berbagai tugas.",
+    alt: "Optimasi ChatGPT dengan prompts terbaik",
+    links: ["setup-vscode-web-development-panduan-lengkap", "panduan-lengkap-belajar-python-untuk-pemula"]
+  },
+  {
+    slug: "panduan-lengkap-belajar-python-untuk-pemula",
+    published: "2025-01-18",
+    category: "tutorial",
+    title: "Panduan Lengkap Belajar Python untuk Pemula",
+    tags: ["Python", "Programming", "Tutorial", "Pemula", "AI"],
+    cover: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=800&q=80&auto=format",
+    minutes: 20,
+    summary: "Panduan komprehensif belajar Python dari dasar hingga mahir, cocok untuk pemula yang ingin memulai karir programming.",
+    alt: "Belajar Python untuk pemula",
+    links: ["setup-vscode-web-development-panduan-lengkap", "cara-optimasi-chatgpt-panduan-prompts-terbaik"]
+  }
 ];
 
-// Generate all possible tag slugs
+// Generate all possible tag slugs from actual articles
 export function getStaticPaths() {
-  // For now, generate a few common tag paths
-  // In a real implementation, you'd read from your data source
-  const commonTags = [
-    'vscode', 'web-development', 'setup', 'tutorial', 'tools',
-    'programming', 'javascript', 'python', 'react', 'vue',
-    'security', 'privacy', 'cybersecurity', 'ai', 'machine-learning'
+  // Define articles data here for getStaticPaths
+  const articlesData = [
+    {
+      slug: "setup-vscode-web-development-panduan-lengkap",
+      tags: ["VSCode", "Web Development", "Setup", "Tutorial", "Tools"]
+    },
+    {
+      slug: "cara-optimasi-chatgpt-panduan-prompts-terbaik",
+      tags: ["AI", "ChatGPT", "Prompt Engineering", "Tutorial", "Produktivitas"]
+    },
+    {
+      slug: "panduan-lengkap-belajar-python-untuk-pemula",
+      tags: ["Python", "Programming", "Tutorial", "Pemula", "AI"]
+    }
   ];
   
-  return commonTags.map(tag => ({
+  const allTags = new Set();
+  
+  // Collect all unique tags from articles
+  articlesData.forEach(article => {
+    if (article.tags && Array.isArray(article.tags)) {
+      article.tags.forEach(tag => {
+        allTags.add(slugifyTag(tag));
+      });
+    }
+  });
+  
+  // Generate paths for each tag
+  return Array.from(allTags).map(tag => ({
     params: { tag }
   }));
 }
@@ -36,14 +80,23 @@ export function getStaticPaths() {
 const { tag } = Astro.params;
 const activeTag = (tag ?? "").toLowerCase();
 
-// Filter articles by tag
-const filteredArticles = ARTICLES.filter(article => 
-  (article.tags || []).some(tagName => slugifyTag(tagName) === activeTag)
-);
+// Filter articles by tag with defensive handling
+const filteredArticles = ARTICLES.filter(article => {
+  // Defensive handling of tags array
+  let tags = article.tags;
+  if (typeof tags === 'string') {
+    tags = tags.split(/[,|]/).map(t => t.trim()).filter(t => t);
+  }
+  if (!Array.isArray(tags)) {
+    tags = [];
+  }
+  
+  return tags.some(tagName => slugifyTag(tagName) === activeTag);
+});
 
-// Generate title and description
-const tagDisplayName = activeTag.replace(/-/g, ' ');
-const title = `Tag: ${tagDisplayName} — Maneh`;
+// Generate title and description with proper capitalization
+const tagDisplayName = activeTag.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+const title = `Artikel dengan Tag: ${tagDisplayName} — Maneh`;
 const description = `Kumpulan artikel dengan tag "${tagDisplayName}" dari Maneh. Tutorial dan tips teknologi terlengkap dengan bahasa sederhana.`;
 
 // Generate article URLs
@@ -101,7 +154,7 @@ const articlesWithUrls = filteredArticles.map(article => {
   <main class="container">
     <section class="page">
       <header>
-        <h1>Tag: {tagDisplayName}</h1>
+        <h1>Artikel dengan Tag: {tagDisplayName}</h1>
         <p class="tag-description">{description}</p>
         <p class="tag-count">Ditemukan {filteredArticles.length} artikel</p>
       </header>
@@ -133,9 +186,9 @@ const articlesWithUrls = filteredArticles.map(article => {
                 {article.tags && article.tags.length > 0 && (
                   <div class="tags">
                     {article.tags.map(tag => (
-                      <span class="tag-item" data-tag={slugifyTag(tag)}>
+                      <a href={getTagUrl(tag)} class="tag-item" rel="tag" data-tag={slugifyTag(tag)} aria-label={`Tag: ${tag}`}>
                         {tag}
-                      </span>
+                      </a>
                     ))}
                   </div>
                 )}
