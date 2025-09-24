@@ -500,6 +500,12 @@ async function validateCoverUrl(url) {
     // Test URL dengan HEAD request
     const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
     
+    // Handle opaque responses (CSP blocked) - assume valid
+    if (response.type === 'opaque') {
+      console.log('Cover URL appears valid (opaque response):', url);
+      return url;
+    }
+    
     // Jika response OK, return URL asli
     if (response.ok) {
       console.log('Cover URL validated successfully:', url);
@@ -510,6 +516,12 @@ async function validateCoverUrl(url) {
     console.warn(`Cover URL 404: ${url}, using fallback`);
     return OG_DEFAULT;
   } catch (error) {
+    // Jika fetch gagal karena CSP atau network, coba langsung return URL
+    if (error.name === 'TypeError' || error.message.includes('CORS') || error.message.includes('CSP')) {
+      console.log('Cover URL assumed valid (CSP/network issue):', url);
+      return url;
+    }
+    
     console.warn(`Cover URL validation failed: ${url}, using fallback`, error);
     return OG_DEFAULT;
   }
@@ -591,7 +603,7 @@ function checkAdSenseSetup() {
     
     // Check CSP
     const cspMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
-    if (cspMeta && cspMeta.content.includes('adtrafficquality.google') && cspMeta.content.includes('ep2.adtrafficquality.google')) {
+    if (cspMeta && cspMeta.content.includes('ep2.adtrafficquality.google') && cspMeta.content.includes('pagead2.googlesyndication.com')) {
       console.log('✅ CSP includes all AdSense domains (including adtrafficquality)');
     } else {
       console.log('❌ CSP missing AdSense domains');
@@ -1976,10 +1988,10 @@ function renderReader(slug, queryStr) {
     
     try {
       // Sanitize title
-      cleanTitle = DOMPurify ? DOMPurify.sanitize(a.title) : a.title.replace(/[<>]/g, '');
+      cleanTitle = (window.DOMPurify && DOMPurify.sanitize) ? DOMPurify.sanitize(a.title) : a.title.replace(/[<>]/g, '');
       
       // Sanitize HTML content with multiple layers
-      if (typeof DOMPurify !== 'undefined') {
+      if (window.DOMPurify && typeof DOMPurify.sanitize === 'function') {
         cleanHTML = DOMPurify.sanitize(a.html, {
           ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em', 'u', 'b', 'i', 'br', 'ul', 'ol', 'li', 'blockquote', 'a', 'img', 'figure', 'figcaption', 'div', 'span', 'code', 'pre'],
           ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'datetime', 'loading', 'decoding'],

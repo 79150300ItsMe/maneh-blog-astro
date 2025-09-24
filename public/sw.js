@@ -63,13 +63,14 @@ self.addEventListener('fetch', event => {
   // Skip chrome-extension and other non-http(s) URLs
   if (!request.url.startsWith('http')) return;
 
-  // Skip API calls, video proxy, article URLs, ads.txt, and external images
+  // Skip API calls, video proxy, article URLs, ads.txt, and external scripts
   if (url.pathname.startsWith('/v/') || 
       url.pathname.startsWith('/api/') ||
       url.pathname.match(/^\/\d{4}\/\d{2}\/\d{2}\/\d+-/) ||
       url.pathname === '/ads.txt' ||
       url.hostname === 'images.unsplash.com' ||
-      url.hostname === 'www.googletagmanager.com') {
+      url.hostname === 'www.googletagmanager.com' ||
+      url.hostname === 'pagead2.googlesyndication.com') {
     return;
   }
 
