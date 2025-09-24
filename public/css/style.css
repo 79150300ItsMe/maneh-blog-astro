@@ -855,6 +855,7 @@ footer{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 40px;colo
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -942,6 +943,7 @@ footer{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 40px;colo
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
